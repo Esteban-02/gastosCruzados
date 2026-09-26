@@ -1,0 +1,61 @@
+Aplicacion de gastos
+
+1. Requisitos funcionales:
+	El usuario puede:
+	1. El usuario puede registrar un aporte a una meta y ver cuánto le falta para cumplirla
+	2. El usuario puede categorizar sus gastos para diferentes fines
+	3. El usuario puede organizar y gestionar gastos semanales y mensuales
+	4. El usuario puede crear alertar para metas o gastos realizados
+	5. El usuario puede ver el estado y rendimiento de sus gastos y ahorros
+
+2. Tablas
+
+                         ┌──────────────────┐
+                         │    CATEGORIAS    │
+                         ├──────────────────┤
+                         │ PK id_categoria  │
+                         │    nombre        │
+                         │    tipo          │
+                         └───────┬──────────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    │                         │
+                  (1)                       (1)
+                    │                         │
+                  (N)                       (N)
+                    │                         │
+           ┌────────▼────────┐       ┌────────▼────────┐
+           │    INGRESOS     │       │     GASTOS      │
+           ├─────────────────┤       ├─────────────────┤
+           │ PK id_ingreso   │       │ PK id_gasto     │
+           │ FK id_categoria │       │ FK id_categoria │
+           │    monto        │       │    monto        │
+           │    fecha        │       │    fecha        │
+           │    descripcion  │       │    descripcion  │
+           └─────────────────┘       └─────────────────┘
+
+
+                         ┌──────────────────┐
+                         │      METAS       │
+                         ├──────────────────┤
+                         │ PK id_meta       │
+                         │    nombre        │
+                         │    monto_objetivo│
+                         │    fecha_limite  │
+                         │    estado        │
+                         └────────┬─────────┘
+                                  │
+                                (1)
+                                  │
+                                (N)
+                                  │
+                         ┌────────▼─────────┐
+                         │  APORTES_META    │
+                         ├──────────────────┤
+                         │ PK id_aporte     │
+                         │ FK id_meta       │
+                         │    monto         │
+                         │    fecha         │
+                         └──────────────────┘
+
+
