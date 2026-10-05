@@ -13,3 +13,5 @@ export interface CrearCategoriaDTO {
 }
 
 export type TipoCategoria = 'ingreso' | 'gasto'; 
+
+export type ActualizarCategoriaDTO = Partial <CrearCategoriaDTO>;
