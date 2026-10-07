@@ -1,7 +1,5 @@
-//listar, buscarPorId, crear, actualizar y eliminar
-
 import pool from './../../config/database.js'
-import type { Categoria, CrearCategoriaDTO, TipoCategoria } from './categorias.types.js'
+import type { ActualizarCategoriaDTO, Categoria, CrearCategoriaDTO, TipoCategoria } from './categorias.types.js'
 
 export async function listar (tipo ?: TipoCategoria): Promise <Categoria[]> {
     const { rows } = await pool.query<Categoria> (
@@ -13,12 +11,12 @@ export async function listar (tipo ?: TipoCategoria): Promise <Categoria[]> {
     return rows;
 }
 
-export async function buscarPorId(id_categoria: number): Promise <Categoria | null > {
+export async function buscarPorId(id_categoria: number): Promise <Categoria> {
     const { rows } = await pool.query<Categoria>(
         'SELECT * FROM categorias WHERE id_categoria = $1',
         [id_categoria]
     );
-    return rows[0] ?? null;
+    return rows[0]!;
 }
 
 export async function crear(datos: CrearCategoriaDTO): Promise <Categoria | null> {
@@ -29,7 +27,7 @@ export async function crear(datos: CrearCategoriaDTO): Promise <Categoria | null
     return rows[0] ?? null;
 }
 
-export async function actualizar(datos: CrearCategoriaDTO, id_categoria: number): Promise <Categoria | null> {
+export async function actualizar(datos: ActualizarCategoriaDTO, id_categoria:number): Promise <Categoria | null> {
     const { rows } = await pool.query<Categoria>(
         `UPDATE categorias 
         SET nombre = COALESCE($1, nombre), 
@@ -48,4 +46,14 @@ export async function eliminar(id_categoria:number): Promise <boolean>{
     );
     
     return rowCount === 1;
+}
+
+//Buscar categoria por nombre
+export async function buscarPorNombre(nombreCat: string): Promise <Categoria> {
+    const { rows } = await pool.query(
+        `SELECT * FROM categorias WHERE nombre = $1 `,
+        [nombreCat],
+    );
+
+    return rows[0] ?? null;
 }

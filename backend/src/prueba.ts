@@ -31,13 +31,13 @@ async function prueba() {
             nombre: 'Salario1',
             tipo: 'gasto',
         },
-        10,
+        12,
     );
     console.log("Actualizacion Categoria: ", actualizarCategoria);
 
 
     console.log("-----Eliminar Categoria-----");
-    const eliminarCategoria = await eliminar(10);
+    const eliminarCategoria = await eliminar(11);
     console.log("Resultado eliminar Categoria: ", eliminarCategoria);
     
 };
