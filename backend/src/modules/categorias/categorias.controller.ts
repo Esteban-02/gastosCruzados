@@ -20,3 +20,42 @@ export async function buscarPorId(
         next(error);
     }
 }
+
+
+export async function buscarPorNombre(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise <void> {
+    try {
+        const nombreCategoria = req.params.nombre;
+        if (nombreCategoria === null) {
+            res.status(400).json({error: 'Error, ingresar nombre a buscar'});
+            return;
+        }
+
+        const buscarCatNombre = await service.buscarPorNombre(nombreCategoria);
+        res.status(200).json({buscarCatNombre});
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export async funtion crearCategoria (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise <void> {
+    try {
+        const { nombre, tipo,} = req.params.categoria;
+        if (categoria === null) {
+            res.status(400).json({error: 'Sin datos para crear categoria'});
+            return;
+        }
+        const crearCategoria = await service.crearCategoria(CrearCategoriaDTO)
+    } catch (error) {
+        
+    }
+}
