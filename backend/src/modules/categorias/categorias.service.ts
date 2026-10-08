@@ -1,6 +1,6 @@
 import * as repo from './categorias.repository.js';
 import { NotFoundError, ConflictError, esErrorPostgres, AppError } from '../../shared/errores/AppError.js';
-import type { ActualizarCategoriaDTO, Categoria, CrearCategoriaDTO } from './categorias.types.js';
+import type { ActualizarCategoriaDTO, Categoria, CrearCategoriaDTO, TipoCategoria } from './categorias.types.js';
 
 /**
  * Buscar categorias por ID
@@ -10,7 +10,7 @@ import type { ActualizarCategoriaDTO, Categoria, CrearCategoriaDTO } from './cat
 export async function buscarPorId(id_categoria: number): Promise<Categoria> {
     const categoria = await repo.buscarPorId(id_categoria);
     if (!categoria) {
-        throw new NotFoundError('Categoria');
+        throw new NotFoundError('No se encontro la categoria');
     }
     return categoria;
 }
@@ -23,11 +23,11 @@ export async function buscarPorId(id_categoria: number): Promise<Categoria> {
 export async function crearCategoria(datos: CrearCategoriaDTO): Promise<Categoria> {
     const buscarCategoria = await repo.buscarPorNombre(datos.nombre);
     if (buscarCategoria !== null) {
-        throw new NotFoundError(`Ya existe una categoria llamada ${datos.nombre}`);
+        throw new ConflictError('Ya existe una clase con ese nombre')
     }
 
     const nuevaCategoria = await repo.crear(datos);
-    return nuevaCategoria!;
+    return nuevaCategoria;
 }
 
 /**
@@ -35,17 +35,21 @@ export async function crearCategoria(datos: CrearCategoriaDTO): Promise<Categori
  * @param datos 
  * @returns 
  */
-export async function actualizar(datos: ActualizarCategoriaDTO, id_categoria: number): Promise<Categoria | null> {
+export async function actualizar(datos: ActualizarCategoriaDTO, id_categoria: number): Promise<Categoria> {
     if (Object.keys(datos).length === 0) {
         throw new AppError ('Debe enviar al menos un campo para actualizar', 400);
     }
-    const buscarCategoria = await buscarPorId(id_categoria);
-    if (buscarCategoria == null) {
-        throw new ConflictError('No hay existe categoria para actualizar');
-    };
+    await buscarPorId(id_categoria);
 
+    if(datos.nombre === undefined){
+        throw new ConflictError ('Nombre vacio');
+    }
+    const nombreCat = await repo.buscarPorNombre(datos.nombre);
+    if (nombreCat !== null ) {
+        throw new ConflictError (`Ya existe una categoria con el nombre ${datos.nombre}` )
+    }
     const actualizarCategoria = await repo.actualizar(datos, id_categoria);
-    return actualizarCategoria ?? null;
+    return actualizarCategoria;
 }
 
 /**
@@ -54,13 +58,10 @@ export async function actualizar(datos: ActualizarCategoriaDTO, id_categoria: nu
  */
 export async function eliminar(id_categoria: number): Promise<void> {
     try {
-        const buscarCategoria = await repo.buscarPorId(id_categoria);
-        if (buscarCategoria == null) {
-            throw new NotFoundError('La categoria no existe');
-        }
+        const buscarCategoria = await buscarPorId(id_categoria);
 
-        const eliminar = await repo.eliminar(id_categoria);
-        if (!eliminar) {
+        const eliminarCat = await repo.eliminar(id_categoria);
+        if (!eliminarCat) {
             throw new NotFoundError(
                 `No fue posible eliminar la categoria ${buscarCategoria.nombre}`
             );
@@ -71,4 +72,13 @@ export async function eliminar(id_categoria: number): Promise<void> {
         }
         throw error;
     }
+}
+
+/**
+ * Listar las categorias por tipo, ya sea que haya o no
+ * @param tipo 
+ * @returns 
+ */
+export async function listar(tipo?: TipoCategoria): Promise<Categoria[]> {
+    return repo.listar(tipo);
 }
