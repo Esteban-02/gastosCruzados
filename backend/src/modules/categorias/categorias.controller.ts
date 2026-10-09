@@ -1,5 +1,6 @@
 import type {Request, Response, NextFunction} from 'express';
-import * as sevice from "./categorias.service.js";
+import * as service from "./categorias.service.js";
+import type { Categoria, CrearCategoriaDTO } from './categorias.types.js';
 
 export async function buscarPorId(
     req: Request,
@@ -22,40 +23,58 @@ export async function buscarPorId(
 }
 
 
-export async function buscarPorNombre(
+export async function crearCategoria (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise <void> {
     try {
-        const nombreCategoria = req.params.nombre;
-        if (nombreCategoria === null) {
-            res.status(400).json({error: 'Error, ingresar nombre a buscar'});
+        const { nombre, tipo,} = req.body;
+        if (typeof nombre != 'string' || !nombre.trim() || (tipo !== 'gasto' && tipo !== 'ingreso')) {
+            res.status(400).json({error: 'El nombre y el tipo son obliatorios para crear la Categoria'});
             return;
         }
 
-        const buscarCatNombre = await service.buscarPorNombre(nombreCategoria);
-        res.status(200).json({buscarCatNombre});
-
+        const datos : CrearCategoriaDTO = {
+            nombre: nombre.trim(),
+            tipo,
+        }
+        const crearCategoria = await service.crearCategoria(datos);
+        res.status(200).json({crearCategoria});
     } catch (error) {
         next(error);
     }
 }
 
 
-export async funtion crearCategoria (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise <void> {
+export async function listar(req: Request, res: Response, next: NextFunction): Promise<void>{
     try {
-        const { nombre, tipo,} = req.params.categoria;
-        if (categoria === null) {
-            res.status(400).json({error: 'Sin datos para crear categoria'});
-            return;
+        const tipo = req.body;
+        const listadoCategorias = await service.listar();
+        if (listadoCategorias.length === 0) {
+            next('No hay categorias para listar');
+            res.status(500).json('No se encontraron categorias para listar');
         }
-        const crearCategoria = await service.crearCategoria(CrearCategoriaDTO)
+        res.status(200).json(listadoCategorias);
     } catch (error) {
-        
+        next(error);
     }
+}
+
+export async function eliminarCategoria(req: Request, res: Response, next: NextFunction) {
+    try {
+        const idCategoria = req.body;
+        if (idCategoria <= 0 || typeof idCategoria != 'number') {
+            res.status(500).json('No se encontro un id para eliminar la categoria')
+        }
+
+        const idEliminarCategoria = await service.eliminar(idCategoria);
+        res.status(200).json(idEliminarCategoria)
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function actualizar(req: Request, res: Response, next: NextFunction): Promise <void> {
+
 }
