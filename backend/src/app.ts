@@ -1,11 +1,15 @@
 import express from 'express';
 import pool from './config/database.js';
+import categoriasRouters from './modules/categorias/categorias.routes.js'
 
 const app = express();
 
 //midedlewares
 
 app.use(express.json());
+
+// ROUTERS CONTROLADOR
+app.get('/api/categorias/', categoriasRouters);
 
 // Ruta para obtener el estado de salud del servidor
 

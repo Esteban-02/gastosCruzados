@@ -22,7 +22,6 @@ export async function buscarPorId(
     }
 }
 
-
 export async function crearCategoria(
     req: Request,
     res: Response,
@@ -45,7 +44,6 @@ export async function crearCategoria(
         next(error);
     }
 }
-
 
 export async function listar(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -82,7 +80,7 @@ export async function actualizar(req: Request, res: Response, next: NextFunction
         }
 
         const { nombre, tipo } = req.body;
-        if ((nombre && tipo) === undefined || tipo !== 'gasto' || tipo !== 'ingreso') {
+        if (nombre && tipo === undefined || tipo === undefined || tipo !== 'gasto' || tipo !== 'ingreso') {
             res.status(400).send('Datos erroneos');
         }
         const datos: ActualizarCategoriaDTO = {
