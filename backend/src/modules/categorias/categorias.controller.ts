@@ -1,60 +1,59 @@
-import type {Request, Response, NextFunction} from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import * as service from "./categorias.service.js";
-import type { Categoria, CrearCategoriaDTO } from './categorias.types.js';
+import type { ActualizarCategoriaDTO, Categoria, CrearCategoriaDTO } from './categorias.types.js';
 
 export async function buscarPorId(
     req: Request,
     res: Response,
     next: NextFunction,
-): Promise <void> {
+): Promise<void> {
     try {
         const id = Number(req.params.id);
 
         if (!Number.isInteger(id) || id <= 0) {
-            res.status(400).json({error: 'El id debe ser un numero entero positivo'});
+            res.status(400).json({ error: 'El id debe ser un numero entero positivo' });
             return;
         }
 
         const categoria = await service.buscarPorId(id);
-        res.status(200).json({categoria});
+        res.status(200).json({ categoria });
     } catch (error) {
         next(error);
     }
 }
 
 
-export async function crearCategoria (
+export async function crearCategoria(
     req: Request,
     res: Response,
     next: NextFunction
-): Promise <void> {
+): Promise<void> {
     try {
-        const { nombre, tipo,} = req.body;
+        const { nombre, tipo, } = req.body;
         if (typeof nombre != 'string' || !nombre.trim() || (tipo !== 'gasto' && tipo !== 'ingreso')) {
-            res.status(400).json({error: 'El nombre y el tipo son obliatorios para crear la Categoria'});
+            res.status(400).json({ error: 'El nombre y el tipo son obliatorios para crear la Categoria' });
             return;
         }
 
-        const datos : CrearCategoriaDTO = {
+        const datos: CrearCategoriaDTO = {
             nombre: nombre.trim(),
             tipo,
         }
         const crearCategoria = await service.crearCategoria(datos);
-        res.status(200).json({crearCategoria});
+        res.status(201).send('Categoria creada');
     } catch (error) {
         next(error);
     }
 }
 
 
-export async function listar(req: Request, res: Response, next: NextFunction): Promise<void>{
+export async function listar(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const tipo = req.body;
-        const listadoCategorias = await service.listar();
-        if (listadoCategorias.length === 0) {
-            next('No hay categorias para listar');
-            res.status(500).json('No se encontraron categorias para listar');
+        if (tipo === undefined || tipo !== 'gasto' || tipo !== 'ingreso') {
+            res.status(400).send('Error en el tipo de categoria');
         }
+        const listadoCategorias = await service.listar(tipo);
         res.status(200).json(listadoCategorias);
     } catch (error) {
         next(error);
@@ -63,9 +62,9 @@ export async function listar(req: Request, res: Response, next: NextFunction): P
 
 export async function eliminarCategoria(req: Request, res: Response, next: NextFunction) {
     try {
-        const idCategoria = req.body;
-        if (idCategoria <= 0 || typeof idCategoria != 'number') {
-            res.status(500).json('No se encontro un id para eliminar la categoria')
+        const idCategoria = Number(req.params);
+        if (idCategoria <= 0 || typeof idCategoria !== 'number') {
+            res.status(400).json('No se encontro un id para eliminar la categoria')
         }
 
         const idEliminarCategoria = await service.eliminar(idCategoria);
@@ -75,6 +74,27 @@ export async function eliminarCategoria(req: Request, res: Response, next: NextF
     }
 }
 
-export async function actualizar(req: Request, res: Response, next: NextFunction): Promise <void> {
+export async function actualizar(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const id = Number(req.params);
+        if (id <= 0 || typeof id !== 'number') {
+            res.status(400).send('Sin id');
+        }
+
+        const { nombre, tipo } = req.body;
+        if ((nombre && tipo) === undefined || tipo !== 'gasto' || tipo !== 'ingreso') {
+            res.status(400).send('Datos erroneos');
+        }
+        const datos: ActualizarCategoriaDTO = {
+            nombre: nombre.trim(),
+            tipo,
+        }
+
+        await service.actualizar(datos, id);
+        res.status(200).send('Categoria actualizada');
+
+    } catch (error) {
+        next(error);
+    }
 
 }
