@@ -49,12 +49,12 @@ export async function eliminar(id_categoria:number): Promise <boolean>{
 }
 
 //Buscar categoria por nombre
-export async function buscarPorNombre(nombreCat: string): Promise <Categoria> {
+export async function buscarPorNombre(nombreCat: string): Promise <Categoria | null> {
     const { rows } = await pool.query<Categoria>(
         `SELECT * FROM categorias WHERE LOWER(nombre) = LOWER($1) `,
         [nombreCat],
     );
 
-    return rows[0]!;
+    return rows[0] ?? null;
 }
 

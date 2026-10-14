@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from './config/database.js';
 import categoriasRouters from './modules/categorias/categorias.routes.js'
+import { errorHandler } from './shared/middlewars/errorHandler.js';
 
 const app = express();
 
@@ -9,7 +10,9 @@ const app = express();
 app.use(express.json());
 
 // ROUTERS CONTROLADOR
-app.get('/api/categorias/', categoriasRouters);
+app.use('/api/categorias/', categoriasRouters);
+
+app.use(errorHandler);
 
 // Ruta para obtener el estado de salud del servidor
 

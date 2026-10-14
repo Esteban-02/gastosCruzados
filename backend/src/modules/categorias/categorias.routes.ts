@@ -6,7 +6,7 @@ const router = Router();
 router.get('/',         controller.listar);
 router.get('/:id',      controller.buscarPorId);
 router.post('/',        controller.crearCategoria);
-router.put('/',        controller.actualizar);
+router.put('/',         controller.actualizar);
 router.delete('/:id',   controller.eliminarCategoria);
 
 export default router;

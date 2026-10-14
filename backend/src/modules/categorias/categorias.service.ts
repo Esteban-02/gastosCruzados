@@ -21,7 +21,10 @@ export async function buscarPorId(id_categoria: number): Promise<Categoria> {
  * @returns 
  */
 export async function crearCategoria(datos: CrearCategoriaDTO): Promise<Categoria> {
+    console.log("Crear categoria en el service");
+    
     const buscarCategoria = await repo.buscarPorNombre(datos.nombre);
+    
     if (buscarCategoria !== null) {
         throw new ConflictError('Ya existe una clase con ese nombre')
     }

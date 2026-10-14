@@ -27,9 +27,13 @@ export async function crearCategoria(
     res: Response,
     next: NextFunction
 ): Promise<void> {
+    console.log("Crear categoria");
+    
     try {
         const { nombre, tipo, } = req.body;
-        if (typeof nombre != 'string' || !nombre.trim() || (tipo !== 'gasto' && tipo !== 'ingreso')) {
+        if (typeof nombre !== 'string' || !nombre.trim() || (tipo !== 'gasto' && tipo !== 'ingreso')) {
+            console.log("Error en crear categoria");
+            
             res.status(400).json({ error: 'El nombre y el tipo son obliatorios para crear la Categoria' });
             return;
         }
@@ -39,20 +43,27 @@ export async function crearCategoria(
             tipo,
         }
         const crearCategoria = await service.crearCategoria(datos);
+        console.log("Resultado de crear categoria: ", crearCategoria);
+        
         res.status(201).send('Categoria creada');
     } catch (error) {
+        console.log("Error en crear categoria: ", error);
+        
         next(error);
     }
 }
 
 export async function listar(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const tipo = req.body;
-        if (tipo === undefined || tipo !== 'gasto' || tipo !== 'ingreso') {
+        const { tipo } = req.query;
+        if ( tipo !== undefined && tipo !== 'gasto' && tipo !== 'ingreso') {
             res.status(400).send('Error en el tipo de categoria');
+            return;
         }
+        console.log("tipo", tipo)
         const listadoCategorias = await service.listar(tipo);
-        res.status(200).json(listadoCategorias);
+
+        res.status(200).json({listadoCategorias});
     } catch (error) {
         next(error);
     }
@@ -60,12 +71,14 @@ export async function listar(req: Request, res: Response, next: NextFunction): P
 
 export async function eliminarCategoria(req: Request, res: Response, next: NextFunction) {
     try {
-        const idCategoria = Number(req.params);
-        if (idCategoria <= 0 || typeof idCategoria !== 'number') {
+        const id = Number(req.params.id);
+        console.log("id: ", id);
+        
+        if (id <= 0 || typeof id !== 'number') {
             res.status(400).json('No se encontro un id para eliminar la categoria')
         }
 
-        const idEliminarCategoria = await service.eliminar(idCategoria);
+        const idEliminarCategoria = await service.eliminar(id);
         res.status(200).json(idEliminarCategoria)
     } catch (error) {
         next(error);
