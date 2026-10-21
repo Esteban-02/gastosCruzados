@@ -27,7 +27,6 @@ export async function crearCategoria(
     res: Response,
     next: NextFunction
 ): Promise<void> {
-    console.log("Crear categoria");
     
     try {
         const { nombre, tipo, } = req.body;
@@ -107,5 +106,4 @@ export async function actualizar(req: Request, res: Response, next: NextFunction
     } catch (error) {
         next(error);
     }
-
 }
