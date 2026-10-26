@@ -1,20 +1,18 @@
-import type { Categoria } from "../categorias/categorias.types.js";
-
 export interface Gasto {
     id_gasto: number,
     id_categoria: number,
     nombre: string,
     monto: string,
     fecha: Date,
-    descripcion: string,
+    descripcion: string | null,
     creado_en: Date,
 }
 
-export interface crearGastoDTO {
+export interface CrearGastoDTO {
     id_categoria: number,
     nombre: string,
     monto: string,
-    fecha: Date,
+    fecha: string,
     descripcion: string,
 }
 
